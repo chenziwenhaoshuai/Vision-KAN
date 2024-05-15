@@ -1,10 +1,8 @@
 # Vision-KAN
 We are experimenting with the possibility of KAN replacing MLP in Vision Transformer, this project may be delayed for a long time due to GPU resource constraints, if there are any new developments, we will show them here!
-|**ImageNet 1k**| date | epoch | top1 | top5 | 
-|-------|-------|-------|-------|-------|
-| model | date | epoch | top1 | top5 | 
-|-------|-------|-------|-------|-------|
-| Vision-KAN | 2024.5.15 | 16 | 32.65 | 57.03 |
+| Dataset | model | date | epoch | top1 | top5 | 
+|-------|-------|-------|-------|-------|-------|
+| ImageNet 1k | Vision-KAN | 2024.5.15 | 16 | 32.65 | 57.03 |
 
 # News
 ## 5.7.2024
