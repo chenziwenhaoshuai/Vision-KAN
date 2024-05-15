@@ -12,7 +12,7 @@ from pathlib import Path
 
 from timm.data import Mixup
 # from timm.models import create_model
-from kit import create_model
+from models_kan import create_model
 from timm.loss import LabelSmoothingCrossEntropy, SoftTargetCrossEntropy
 from timm.scheduler import create_scheduler
 from timm.optim import create_optimizer
@@ -33,13 +33,13 @@ import utils
 
 def get_args_parser():
     parser = argparse.ArgumentParser('DeiT training and evaluation script', add_help=False)
-    parser.add_argument('--batch-size', default=40, type=int)
+    parser.add_argument('--batch-size', default=144, type=int)
     parser.add_argument('--epochs', default=300, type=int)
     parser.add_argument('--bce-loss', action='store_true')
     parser.add_argument('--unscale-lr', action='store_true',default=True)
 
     # Model parameters
-    parser.add_argument('--model', default='deit_tiny_patch16_LS', type=str, metavar='MODEL',
+    parser.add_argument('--model', default='deit_tiny_patch16_224', type=str, metavar='MODEL',
                         help='Name of model to train')
     parser.add_argument('--input-size', default=224, type=int, help='images input size')
 
@@ -70,7 +70,7 @@ def get_args_parser():
     # Learning rate schedule parameters
     parser.add_argument('--sched', default='cosine', type=str, metavar='SCHEDULER',
                         help='LR scheduler (default: "cosine"')
-    parser.add_argument('--lr', type=float, default=1e-4, metavar='LR',
+    parser.add_argument('--lr', type=float, default=5e-4, metavar='LR',
                         help='learning rate (default: 5e-4)')
     parser.add_argument('--lr-noise', type=float, nargs='+', default=None, metavar='pct, pct',
                         help='learning rate noise on/off epoch percentages')
@@ -153,7 +153,7 @@ def get_args_parser():
     parser.add_argument('--cosub', action='store_true') 
     
     # * Finetuning params
-    parser.add_argument('--finetune', default='', help='finetune from checkpoint')
+    parser.add_argument('--finetune', default='output/checkpoint.pth', help='finetune from checkpoint')
     parser.add_argument('--attn-only', action='store_true') 
     
     # Dataset parameters
@@ -170,7 +170,7 @@ def get_args_parser():
     parser.add_argument('--device', default='cuda',
                         help='device to use for training / testing')
     parser.add_argument('--seed', default=0, type=int)
-    parser.add_argument('--resume', default='output/checkpoint.pth', help='resume from checkpoint')
+    parser.add_argument('--resume', default='', help='resume from checkpoint')
     parser.add_argument('--start_epoch', default=0, type=int, metavar='N',
                         help='start epoch')
     parser.add_argument('--eval', action='store_true', help='Perform evaluation only')
