@@ -1,4 +1,4 @@
-# Vision-KAN
+# [Vision-KAN](https://github.com/KindXiaoming/pykan)
 We are experimenting with the possibility of KAN replacing MLP in Vision Transformer, this project may be delayed for a long time due to GPU resource constraints, if there are any new developments, we will show them here!
 | Dataset | KAN hidden dim | model | date | epoch | top1 | top5 | 
 |-------|-------|-------|-------|-------|-------|-------|
@@ -11,7 +11,7 @@ We released our current Vision KAN code, we used efficient KAN to simply replace
 ## 5.14.2024
 The model has started to converge, we use [192, 20, 192] as input, hidden, and output dimensions, and we reshape the input dimensions in order to fit the processing dimensions of KAN.
 ## 5.15.2024
-we change ekan to faster kan to speed up to 2x in training process, and change basemodel from Deit iii to Deit, so that we can use pretrained model for most layers except kan layer
+we change [efficient kan](https://github.com/Blealtan/efficient-kan) to [faster kan](https://github.com/AthanasiosDelis/faster-kan) to speed up to 2x in training process, and change base model from Deit iii to Deit, so that we can use pre-trained model for most layers except kan layer
 ## 5.16.2024
 The convergence of the model seems to be entering a bottleneck, and I'm guessing that kan's hidden layer setting of 20 is too small, so I'm going to adjust the hidden layer to 192 if it doesn't converge after a few more rounds of running.
 # Architecture
