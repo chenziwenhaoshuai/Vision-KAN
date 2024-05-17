@@ -1,5 +1,9 @@
 # [Vision-KAN](https://github.com/KindXiaoming/pykan)
 We are experimenting with the possibility of KAN replacing MLP in Vision Transformer, this project may be delayed for a long time due to GPU resource constraints, if there are any new developments, we will show them here!
+| Dataset | MLP hidden dim | model | date | epoch | top1 | top5 | 
+|-------|-------|-------|-------|-------|-------|-------|
+| ImageNet 1k | 768 | DeiT-tiny(baseline) | - | 300 | 72.2 | 91.1 |
+
 | Dataset | KAN hidden dim | model | date | epoch | top1 | top5 | 
 |-------|-------|-------|-------|-------|-------|-------|
 | ImageNet 1k | 20 | Vision-KAN | 2024.5.16 | 37 | 36.34 | 61.48 |
