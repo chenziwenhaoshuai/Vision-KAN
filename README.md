@@ -7,7 +7,7 @@ We are experimenting with the possibility of KAN replacing MLP in Vision Transfo
 | Dataset | KAN hidden dim | model | date | epoch | top1 | top5 | 
 |-------|-------|-------|-------|-------|-------|-------|
 | ImageNet 1k | 20 | Vision-KAN | 2024.5.16 | 37(stop) | 36.34 | 61.48 |
-| ImageNet 1k | 192 | Vision-KAN | 2024.5.20 | 147(training) | 60.42 | 83.00 |
+| ImageNet 1k | 192 | Vision-KAN | 2024.5.20 | 157(training) | 60.83 | 83.44 |
 
 # News
 ## 5.7.2024
@@ -20,6 +20,6 @@ we change [efficient kan](https://github.com/Blealtan/efficient-kan) to [faster 
 The convergence of the model seems to be entering a bottleneck, and I'm guessing that kan's hidden layer setting of 20 is too small, so I'm going to adjust the hidden layer to 192 if it doesn't converge after a few more rounds of running.
 # Architecture
 We used [DeiT](https://github.com/facebookresearch/deit) as a baseline for Vision KAN development, thanks to Meta and MIT for the amazing work!
-## Star History
+# Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=chenziwenhaoshuai/Vision-KAN&type=Date)](https://star-history.com/#chenziwenhaoshuai/Vision-KAN&Date)
