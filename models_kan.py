@@ -7,15 +7,13 @@ from functools import partial
 from timm.models.vision_transformer import VisionTransformer, _cfg, Block
 from timm.models.registry import register_model
 from timm.models.layers import trunc_normal_
-from DQViT_new import ViT as DQViT
 from fasterkan import FasterKAN as KAN
 
 __all__ = [
     'deit_tiny_patch16_224', 'deit_small_patch16_224', 'deit_base_patch16_224',
     'deit_tiny_distilled_patch16_224', 'deit_small_distilled_patch16_224',
     'deit_base_distilled_patch16_224', 'deit_base_patch16_384',
-    'deit_base_distilled_patch16_384', 'DQViT_tiny_patch16_224',
-    'DQViT_small_patch16_224', 'DQViT_base_patch16_224'
+    'deit_base_distilled_patch16_384'
 ]
 
 class kanBlock(Block):
@@ -106,66 +104,7 @@ class DistilledVisionTransformer(VisionTransformer):
         else:
             # during inference, return the average of both classifier predictions
             return (x + x_dist) / 2
-@register_model
-def DQViT_tiny_patch16_224(pretrained=False, **kwargs):
-    model = DQViT(
-        dim=192,
-        image_size=224,
-        patch_size=32,
-        num_classes=kwargs["num_classes"],
-        channels=3,
-        depth=12,
-        heads=3,
-        mlp_dim=192 * 4,
-        dim_head=64,
-        batch_size=kwargs["batch_size"],
-        device=torch.device('cuda'),
-        use_dq=True)
-    model.default_cfg = _cfg()
-    if pretrained:
-        checkpoint = torch.load("DQViT_tiny_patch32_224.pth")
-        model.load_state_dict(checkpoint["model"])
-    return model
-@register_model
-def DQViT_small_patch16_224(pretrained=False, **kwargs):
-    model = DQViT(
-        dim=384,
-        image_size=224,
-        patch_size=32,
-        num_classes=kwargs["num_classes"],
-        channels=3,
-        depth=12,
-        heads=6,
-        mlp_dim=384 * 4,
-        dim_head=64,
-        batch_size=kwargs["batch_size"],
-        device=torch.device('cuda'),
-        use_dq=True)
-    model.default_cfg = _cfg()
-    if pretrained:
-        checkpoint = torch.load("DQViT_small_patch32_224.pth")
-        model.load_state_dict(checkpoint["model"])
-    return model
-@register_model
-def DQViT_base_patch16_224(pretrained=False, **kwargs):
-    model = DQViT(
-        dim=768,
-        image_size=224,
-        patch_size=32,
-        num_classes=kwargs["num_classes"],
-        channels=3,
-        depth=12,
-        heads=12,
-        mlp_dim=768 * 4,
-        dim_head=64,
-        batch_size=kwargs["batch_size"],
-        device=torch.device('cuda'),
-        use_dq=True)
-    model.default_cfg = _cfg()
-    if pretrained:
-        checkpoint = torch.load("DQViT_base_patch32_224.pth")
-        model.load_state_dict(checkpoint["model"])
-    return model
+
 @register_model
 def deit_tiny_patch16_224(pretrained=False, **kwargs):
     model = VisionKAN(
