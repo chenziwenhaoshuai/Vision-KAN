@@ -36,16 +36,33 @@ class kanBlock(Block):
     def forward(self, x):
         b, t, d = x.shape
         x = x + self.drop_path(self.attn(self.norm1(x)))
-        x = x + self.drop_path(self.kan(self.norm2(x).reshape(-1,x.shape[-1])).reshape(b,t,d))
+        x = x + self.drop_path(self.kan(self.norm2(x).reshape(-1, x.shape[-1])).reshape(b, t, d))
         return x
+
+
 class VisionKAN(VisionTransformer):
-    def __init__(self, *args, num_heads=8, batch_size=16,  **kwargs):
+    def __init__(self, *args, num_heads=8, batch_size=16, **kwargs):
         super().__init__(*args, **kwargs)
         self.num_heads = num_heads
+        # For newer version timm they don't save the depth to self.depth, so we need to check it
+        try:
+            self.depth
+        except AttributeError:
+            if 'depth' in kwargs:
+                self.depth = kwargs['depth']
+            else:
+                self.depth = 12
 
-        self.blocks = nn.ModuleList([
-            kanBlock(dim=self.embed_dim,num_heads=self.num_heads)
-            for i in range(self.depth)])
+        block_list = [
+            kanBlock(dim=self.embed_dim, num_heads=self.num_heads)
+            for i in range(self.depth)
+        ]
+        # check the origin type of the block is torch.nn.modules.container.Sequential
+        # if the origin type is torch.nn.modules.container.Sequential, then we need to convert it to a list
+        if type(self.blocks) == nn.Sequential:
+            self.blocks = nn.Sequential(*block_list)
+        elif type(self.blocks) == nn.ModuleList:
+            self.blocks = nn.ModuleList(block_list)
 
 
 
