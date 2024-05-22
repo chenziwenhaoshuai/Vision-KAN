@@ -18,6 +18,8 @@ The model has started to converge, we use [192, 20, 192] as input, hidden, and o
 we change [efficient kan](https://github.com/Blealtan/efficient-kan) to [faster kan](https://github.com/AthanasiosDelis/faster-kan) to speed up to 2x in training process, and change base model from Deit iii to Deit, so that we can use pre-trained model for most layers except kan layer
 ## 5.16.2024
 The convergence of the model seems to be entering a bottleneck, and I'm guessing that kan's hidden layer setting of 20 is too small, so I'm going to adjust the hidden layer to 192 if it doesn't converge after a few more rounds of running.
+## 5.22.2024
+Fix Timm version dependency bugs and remove extraneous code.
 # Architecture
 We used [DeiT](https://github.com/facebookresearch/deit) as a baseline for Vision KAN development, thanks to Meta and MIT for the amazing work!
 # Star History
