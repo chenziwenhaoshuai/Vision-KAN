@@ -7,7 +7,7 @@ We are experimenting with the possibility of KAN replacing MLP in Vision Transfo
 | Dataset | KAN hidden dim | model | date | epoch | top1 | top5 | 
 |-------|-------|-------|-------|-------|-------|-------|
 | ImageNet 1k | 20 | Vision-KAN | 2024.5.16 | 37(stop) | 36.34 | 61.48 |
-| ImageNet 1k | 192 | Vision-KAN | 2024.5.22 | 243(training) | 64.02 | 85.61 |
+| ImageNet 1k | 192 | Vision-KAN | 2024.5.23 | 279(training) | 64.63 | 85.92 |
 
 # News
 ## 5.7.2024
