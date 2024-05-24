@@ -20,6 +20,8 @@ we change [efficient kan](https://github.com/Blealtan/efficient-kan) to [faster 
 The convergence of the model seems to be entering a bottleneck, and I'm guessing that kan's hidden layer setting of 20 is too small, so I'm going to adjust the hidden layer to 192 if it doesn't converge after a few more rounds of running.
 ## 5.22.2024
 Fix Timm version dependency bugs and remove extraneous code.
+## 5.24.2024
+The decline in losses is starting to slow down and it looks like it's getting close to the final result.
 # Architecture
 We used [DeiT](https://github.com/facebookresearch/deit) as a baseline for Vision KAN development, thanks to Meta and MIT for the amazing work!
 # Star History
