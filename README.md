@@ -7,7 +7,8 @@ We are experimenting with the possibility of [KAN](https://github.com/KindXiaomi
 | Dataset | KAN hidden dim | model | date | epoch | top1 | top5 | 
 |-------|-------|-------|-------|-------|-------|-------|
 | ImageNet 1k | 20 | Vision-KAN | 2024.5.16 | 37(stop) | 36.34 | 61.48 |
-| ImageNet 1k | 192 | Vision-KAN | 2024.5.24 | 305(training) | 64.86 | 86.06 |
+| ImageNet 1k | 192 | Vision-KAN | 2024.5.25 | 346(stop) | 64.87 | 86.14 |
+| ImageNet 1k | 768 | Vision-KAN | 2024.5.25 | 0(training) | 0 | 0 |
 
 # News
 ## 5.7.2024
@@ -22,6 +23,8 @@ The convergence of the model seems to be entering a bottleneck, and I'm guessing
 Fix Timm version dependency bugs and remove extraneous code.
 ## 5.24.2024
 The decline in losses is starting to slow down and it looks like it's getting close to the final result.
+## 5.25.2024
+The model with 192 hidden layers is close to convergence and we will next try a larger KAN hidden layer, the same as the MLP.
 # Architecture
 We used [DeiT](https://github.com/facebookresearch/deit) as a baseline for Vision KAN development, thanks to Meta and MIT for the amazing work!
 # Star History
