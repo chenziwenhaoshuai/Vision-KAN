@@ -9,7 +9,7 @@ We are experimenting with the possibility of [KAN](https://github.com/KindXiaomi
 | ImageNet 1k | 20 | Vision-KAN | 2024.5.16 | 37(stop) | 36.34 | 61.48 | - |
 | ImageNet 1k | 192 | Vision-KAN | 2024.5.25 | 346(stop) | 64.87 | 86.14 |[Checkpoint](https://pan.baidu.com/s/117ox7oh6zzXLwPMmQ6od1Q?pwd=y1vw) |
 | ImageNet 1k | 768 | Vision-KAN | 2024.5.25 | 7(training) | 32.25 | 57.09 | - |
-
+| CIFAR-100 | 192 | Vision-KAN | 2024.5.25 | 300(stop) | 73.17 | 93.307 | - |
 # News
 ## 5.7.2024
 We released our current Vision KAN code, we used efficient KAN to simply replace the MLP layer in the Transformer block and are pre-training the Tiny model on ImageNet 1k, subsequent results will be updated in the table.
