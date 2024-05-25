@@ -3,6 +3,9 @@ We are experimenting with the possibility of [KAN](https://github.com/KindXiaomi
 | Dataset | MLP hidden dim | model | date | epoch | top1 | top5 | 
 |-------|-------|-------|-------|-------|-------|-------|
 | ImageNet 1k | 768 | DeiT-tiny(baseline) | - | 300 | 72.2 | 91.1 |
+| CIFAR-100 | 192 | DeiT-tiny(baseline) | 2024.5.25 | 55(training) ETA-3h (300 epochs) | 78.5 | 95.6 |
+| CIFAR-100 | 384 | DeiT-small(baseline) | 2024.5.25 | 2(training) ETA-6h (300 epochs) | 2.13 | 9.92 |
+| CIFAR-100 | 768 | DeiT-base(baseline) | 2024.5.25 | 10(training) ETA-15h (300 epochs) | 78.77 | 96.16 |
 
 | Dataset | KAN hidden dim | model | date | epoch | top1 | top5 | Checkpoint |
 |-------|-------|-------|-------|-------|-------|-------|-------|
@@ -10,6 +13,8 @@ We are experimenting with the possibility of [KAN](https://github.com/KindXiaomi
 | ImageNet 1k | 192 | Vision-KAN | 2024.5.25 | 346(stop) | 64.87 | 86.14 |[Checkpoint](https://pan.baidu.com/s/117ox7oh6zzXLwPMmQ6od1Q?pwd=y1vw) |
 | ImageNet 1k | 768 | Vision-KAN | 2024.5.25 | 7(training) | 32.25 | 57.09 | - |
 | CIFAR-100 | 192 | Vision-KAN | 2024.5.25 | 300(stop) | 73.17 | 93.307 | - |
+| CIFAR-100 | 384 | Vision-KAN | 2024.5.25 | 2(training) ETA-20h (300 epochs) | 3.14 | 12.46 | - |
+| CIFAR-100 | 768 | Vision-KAN | 2024.5.25 | 2(training) ETA-33h (300 epochs) | 3.89 | 14.44 | - |
 # News
 ## 5.7.2024
 We released our current Vision KAN code, we used efficient KAN to simply replace the MLP layer in the Transformer block and are pre-training the Tiny model on ImageNet 1k, subsequent results will be updated in the table.
