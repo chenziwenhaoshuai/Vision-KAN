@@ -12,7 +12,7 @@ We are experimenting with the possibility of [KAN](https://github.com/KindXiaomi
 | ImageNet 1k | 20 | Vision-KAN | 2024.5.16 | 37(stop) | 36.34 | 61.48 | - |
 | ImageNet 1k | 192 | Vision-KAN | 2024.5.25 | 346(stop) | 64.87 | 86.14 |[Checkpoint](https://pan.baidu.com/s/117ox7oh6zzXLwPMmQ6od1Q?pwd=y1vw) |
 | CIFAR-100 | 192 | Vision-KAN | 2024.5.25 | 300(stop) | 73.17 | 93.307 | - |
-| ImageNet 1k | 768 | Vision-KAN | 2024.5.25 | 17(training) | 48.69 | 73.49 | - |
+| ImageNet 1k | 768 | Vision-KAN | 2024.5.26 | 17(training) | 48.94 | 73.68 | - |
 | CIFAR-100 | 384 | Vision-KAN | 2024.5.25 | 2(training) ETA-20h (300 epochs) | 3.14 | 12.46 | - |
 | CIFAR-100 | 768 | Vision-KAN | 2024.5.25 | 2(training) ETA-33h (300 epochs) | 3.89 | 14.44 | - |
 
