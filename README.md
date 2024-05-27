@@ -3,18 +3,18 @@ We are experimenting with the possibility of [KAN](https://github.com/KindXiaomi
 | Dataset | MLP hidden dim | model | date | epoch | top1 | top5 | 
 |-------|-------|-------|-------|-------|-------|-------|
 | ImageNet 1k | 768 | DeiT-tiny(baseline) | - | 300 | 72.2 | 91.1 |
-| CIFAR-100 | 192 | DeiT-tiny(baseline) | 2024.5.25 | 55(training) ETA-3h (300 epochs) | 78.5 | 95.6 |
-| CIFAR-100 | 384 | DeiT-small(baseline) | 2024.5.25 | 2(training) ETA-6h (300 epochs) | 2.13 | 9.92 |
-| CIFAR-100 | 768 | DeiT-base(baseline) | 2024.5.25 | 10(training) ETA-15h (300 epochs) | 78.77 | 96.16 |
+| CIFAR-100 | 192 | DeiT-tiny(baseline) | 2024.5.25 | 300(stop) | 84.94 | 96.53 |
+| CIFAR-100 | 384 | DeiT-small(baseline) | 2024.5.25 | 300(stop) | 86.49 | 96.17 |
+| CIFAR-100 | 768 | DeiT-base(baseline) | 2024.5.25 | 300(stop) | 86.54 | 96.16 |
 
 | Dataset | KAN hidden dim | model | date | epoch | top1 | top5 | Checkpoint |
 |-------|-------|-------|-------|-------|-------|-------|-------|
 | ImageNet 1k | 20 | Vision-KAN | 2024.5.16 | 37(stop) | 36.34 | 61.48 | - |
 | ImageNet 1k | 192 | Vision-KAN | 2024.5.25 | 346(stop) | 64.87 | 86.14 |[Checkpoint](https://pan.baidu.com/s/117ox7oh6zzXLwPMmQ6od1Q?pwd=y1vw) |
-| CIFAR-100 | 192 | Vision-KAN | 2024.5.25 | 300(stop) | 73.17 | 93.307 | - |
 | ImageNet 1k | 768 | Vision-KAN | 2024.5.26 | 17(training) | 48.94 | 73.68 | - |
-| CIFAR-100 | 384 | Vision-KAN | 2024.5.25 | 2(training) ETA-20h (300 epochs) | 3.14 | 12.46 | - |
-| CIFAR-100 | 768 | Vision-KAN | 2024.5.25 | 2(training) ETA-33h (300 epochs) | 3.89 | 14.44 | - |
+| CIFAR-100 | 192 | Vision-KAN | 2024.5.25 | 300(stop) | 73.17 | 93.307 | [Checkpoint](https://drive.google.com/drive/folders/19WPq6bZ9NgX-WxD7qXSTKiHc5D6P8jQP?usp=sharing) |
+| CIFAR-100 | 384 | Vision-KAN | 2024.5.25 | 300(stop) | 78.69 | 94.73 | - |
+| CIFAR-100 | 768 | Vision-KAN | 2024.5.25 | 191(training) ETA-12h (300 epochs) | 76.96 | 94.36 | - |
 
 # News
 ## 5.7.2024
