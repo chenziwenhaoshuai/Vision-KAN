@@ -1,11 +1,11 @@
 # Vision-KAN
 We are experimenting with the possibility of [KAN](https://github.com/KindXiaoming/pykan) replacing MLP in Vision Transformer, this project may be delayed for a long time due to GPU resource constraints, if there are any new developments, we will show them here!
-| Dataset | MLP hidden dim | model | date | epoch | top1 | top5 | 
+| Dataset | MLP hidden dim | model | date | epoch | top1 | top5 | Checkpoint |
 |-------|-------|-------|-------|-------|-------|-------|
-| ImageNet 1k | 768 | DeiT-tiny(baseline) | - | 300 | 72.2 | 91.1 |
-| CIFAR-100 | 192 | DeiT-tiny(baseline) | 2024.5.25 | 300(stop) | 84.94 | 96.53 |
-| CIFAR-100 | 384 | DeiT-small(baseline) | 2024.5.25 | 300(stop) | 86.49 | 96.17 |
-| CIFAR-100 | 768 | DeiT-base(baseline) | 2024.5.25 | 300(stop) | 86.54 | 96.16 |
+| ImageNet 1k | 768 | DeiT-tiny(baseline) | - | 300 | 72.2 | 91.1 | |
+| CIFAR-100 | 192 | DeiT-tiny(baseline) | 2024.5.25 | 300(stop) | 84.94 | 96.53 | [Checkpoint](https://drive.google.com/drive/folders/1hPrnfI5CKMgwM6lgSrFUwvMQYsjtjg3A?usp=drive_link) |
+| CIFAR-100 | 384 | DeiT-small(baseline) | 2024.5.25 | 300(stop) | 86.49 | 96.17 | [Checkpoint](https://drive.google.com/drive/folders/1ZSl2ojZUQRkIsZzJ0w5rahOTAv4IiZCt?usp=drive_link) |
+| CIFAR-100 | 768 | DeiT-base(baseline) | 2024.5.25 | 300(stop) | 86.54 | 96.16 | [Checkpoint](https://drive.google.com/drive/folders/14kLdJDy11zv_mC35JvbcPCdoXvrHspNK?usp=sharing) |
 
 | Dataset | KAN hidden dim | model | date | epoch | top1 | top5 | Checkpoint |
 |-------|-------|-------|-------|-------|-------|-------|-------|
@@ -13,8 +13,8 @@ We are experimenting with the possibility of [KAN](https://github.com/KindXiaomi
 | ImageNet 1k | 192 | Vision-KAN | 2024.5.25 | 346(stop) | 64.87 | 86.14 |[Checkpoint](https://pan.baidu.com/s/117ox7oh6zzXLwPMmQ6od1Q?pwd=y1vw) |
 | ImageNet 1k | 768 | Vision-KAN | 2024.5.29 | 71(training) | 59.39 | 82.49 | - |
 | CIFAR-100 | 192 | Vision-KAN | 2024.5.25 | 300(stop) | 73.17 | 93.307 | [Checkpoint](https://drive.google.com/drive/folders/19WPq6bZ9NgX-WxD7qXSTKiHc5D6P8jQP?usp=sharing) |
-| CIFAR-100 | 384 | Vision-KAN | 2024.5.25 | 300(stop) | 78.69 | 94.73 | - |
-| CIFAR-100 | 768 | Vision-KAN | 2024.5.25 | 191(training) ETA-12h (300 epochs) | 76.96 | 94.36 | - |
+| CIFAR-100 | 384 | Vision-KAN | 2024.5.25 | 300(stop) | 78.69 | 94.73 | [Checkpoint](https://drive.google.com/drive/folders/1Uhj4yV0HZRQkPFUerxy88B19N1eDdgsc?usp=drive_link) |
+| CIFAR-100 | 768 | Vision-KAN | 2024.5.29 | 300(stop) | 79.82 | 95.42 | [Checkpoint](https://drive.google.com/drive/folders/1FT55_6tDO_a135sQKBDn409fDdXvCi4N?usp=drive_link) |
 
 # News
 ## 5.7.2024
