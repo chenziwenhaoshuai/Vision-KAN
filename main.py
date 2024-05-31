@@ -18,17 +18,17 @@ from timm.scheduler import create_scheduler
 from timm.optim import create_optimizer
 from timm.utils import NativeScaler, get_state_dict, ModelEma
 
-from datasets import build_dataset
-from engine import train_one_epoch, evaluate
-from losses import DistillationLoss
-from samplers import RASampler
-from augment import new_data_aug_generator
+from .datasets import build_dataset
+from .engine import train_one_epoch, evaluate
+from .losses import DistillationLoss
+from .samplers import RASampler
+from .augment import new_data_aug_generator
 
 # import models
 # import models_v2
 import kit
 
-import utils
+import .utils import  get_world_size, get_rank, is_main_process, save_on_master, _load_checkpoint_for_ema, init_distributed_mode
 
 
 def get_args_parser():
@@ -186,14 +186,14 @@ def get_args_parser():
 
     # distributed training parameters
     parser.add_argument('--distributed', action='store_true', default=False, help='Enabling distributed training')
-    # parser.add_argument('--world_size', default=1, type=int,
-    #                     help='number of distributed processes')
-    # parser.add_argument('--dist_url', default='env://', help='url used to set up distributed training')
+    parser.add_argument('--world_size', default=1, type=int,
+                        help='number of distributed processes')
+    parser.add_argument('--dist_url', default='env://', help='url used to set up distributed training')
     return parser
 
 
 def main(args):
-    # utils.init_distributed_mode(args)
+    init_distributed_mode(args)
 
     print(args)
 
@@ -203,39 +203,39 @@ def main(args):
     device = torch.device(args.device)
 
     # fix the seed for reproducibility
-    seed = args.seed + utils.get_rank()
+    seed = args.seed + get_rank()
     torch.manual_seed(seed)
     np.random.seed(seed)
-    # random.seed(seed)
+    random.seed(seed)
 
     cudnn.benchmark = True
 
     dataset_train, args.nb_classes = build_dataset(is_train=True, args=args)
     dataset_val, _ = build_dataset(is_train=False, args=args)
 
-    # if args.distributed:
-    #     num_tasks = utils.get_world_size()
-    #     global_rank = utils.get_rank()
-    #     if args.repeated_aug:
-    #         sampler_train = RASampler(
-    #             dataset_train, num_replicas=num_tasks, rank=global_rank, shuffle=True
-    #         )
-    #     else:
-    #         sampler_train = torch.utils.data.DistributedSampler(
-    #             dataset_train, num_replicas=num_tasks, rank=global_rank, shuffle=True
-    #         )
-    #     if args.dist_eval:
-    #         if len(dataset_val) % num_tasks != 0:
-    #             print('Warning: Enabling distributed evaluation with an eval dataset not divisible by process number. '
-    #                   'This will slightly alter validation results as extra duplicate entries are added to achieve '
-    #                   'equal num of samples per-process.')
-    #         sampler_val = torch.utils.data.DistributedSampler(
-    #             dataset_val, num_replicas=num_tasks, rank=global_rank, shuffle=False)
-    #     else:
-    #         sampler_val = torch.utils.data.SequentialSampler(dataset_val)
-    # else:
-    sampler_train = torch.utils.data.RandomSampler(dataset_train)
-    sampler_val = torch.utils.data.SequentialSampler(dataset_val)
+    if args.distributed:
+        num_tasks = get_world_size()
+        global_rank = get_rank()
+        if args.repeated_aug:
+            sampler_train = RASampler(
+                dataset_train, num_replicas=num_tasks, rank=global_rank, shuffle=True
+            )
+        else:
+            sampler_train = torch.utils.data.DistributedSampler(
+                dataset_train, num_replicas=num_tasks, rank=global_rank, shuffle=True
+            )
+        if args.dist_eval:
+            if len(dataset_val) % num_tasks != 0:
+                print('Warning: Enabling distributed evaluation with an eval dataset not divisible by process number. '
+                      'This will slightly alter validation results as extra duplicate entries are added to achieve '
+                      'equal num of samples per-process.')
+            sampler_val = torch.utils.data.DistributedSampler(
+                dataset_val, num_replicas=num_tasks, rank=global_rank, shuffle=False)
+        else:
+            sampler_val = torch.utils.data.SequentialSampler(dataset_val)
+    else:
+        sampler_train = torch.utils.data.RandomSampler(dataset_train)
+        sampler_val = torch.utils.data.SequentialSampler(dataset_val)
 
     data_loader_train = torch.utils.data.DataLoader(
         dataset_train, sampler=sampler_train,
@@ -352,7 +352,7 @@ def main(args):
     n_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print('number of params:', n_parameters)
     if not args.unscale_lr:
-        linear_scaled_lr = args.lr * args.batch_size * utils.get_world_size() / 512.0
+        linear_scaled_lr = args.lr * args.batch_size * get_world_size() / 512.0
         args.lr = linear_scaled_lr
     optimizer = create_optimizer(args, model_without_ddp)
     loss_scaler = NativeScaler()
@@ -410,7 +410,7 @@ def main(args):
             lr_scheduler.load_state_dict(checkpoint['lr_scheduler'])
             args.start_epoch = checkpoint['epoch'] + 1
             if args.model_ema:
-                utils._load_checkpoint_for_ema(model_ema, checkpoint['model_ema'])
+                _load_checkpoint_for_ema(model_ema, checkpoint['model_ema'])
             if 'scaler' in checkpoint:
                 loss_scaler.load_state_dict(checkpoint['scaler'])
         lr_scheduler.step(args.start_epoch)
@@ -438,7 +438,7 @@ def main(args):
         if args.output_dir:
             checkpoint_paths = [output_dir / 'checkpoint.pth']
             for checkpoint_path in checkpoint_paths:
-                utils.save_on_master({
+                save_on_master({
                     'model': model_without_ddp.state_dict(),
                     'optimizer': optimizer.state_dict(),
                     'lr_scheduler': lr_scheduler.state_dict(),
@@ -457,7 +457,7 @@ def main(args):
             if args.output_dir:
                 checkpoint_paths = [output_dir / 'best_checkpoint.pth']
                 for checkpoint_path in checkpoint_paths:
-                    utils.save_on_master({
+                    save_on_master({
                         'model': model_without_ddp.state_dict(),
                         'optimizer': optimizer.state_dict(),
                         'lr_scheduler': lr_scheduler.state_dict(),
@@ -477,7 +477,7 @@ def main(args):
         
         
         
-        if args.output_dir and utils.is_main_process():
+        if args.output_dir and is_main_process():
             with (output_dir / "log.txt").open("a") as f:
                 f.write(json.dumps(log_stats) + "\n")
 

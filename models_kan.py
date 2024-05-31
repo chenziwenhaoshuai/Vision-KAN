@@ -7,7 +7,7 @@ from functools import partial
 from timm.models.vision_transformer import VisionTransformer, _cfg, Block, Attention
 from timm.models.registry import register_model
 from timm.models.layers import trunc_normal_
-from fasterkan import FasterKAN as KAN
+from .fasterkan import FasterKAN as KAN
 
 __all__KAN = [
     'deit_base_patch16_224_KAN', 'deit_small_patch16_224_KAN',  

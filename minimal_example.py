@@ -1,10 +1,10 @@
-from models_kan import create_model
+from .models_kan import create_model
 import torch.optim as optim
 import torch
 import torchvision
 import torchvision.transforms as transforms
 import torch.nn as nn
-from engine import train_one_epoch, evaluate
+from .engine import train_one_epoch, evaluate
 
 KAN_model = create_model(
     model_name='deit_tiny_patch16_224_KAN',
