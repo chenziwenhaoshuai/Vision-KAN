@@ -4,12 +4,12 @@ We are experimenting with the possibility of [KAN](https://github.com/KindXiaomi
 # To install this package
 
 ```
-pip install Vision-KAN
+pip install VisionKAN
 ```
 
 # Minimal Example
 ```
-from Vision_KAN import create_model
+from VisionKAN import create_model, train_one_epoch, evaluate
 
 KAN_model = create_model(
     model_name='deit_tiny_patch16_224_KAN',
