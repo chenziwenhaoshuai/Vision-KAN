@@ -1,5 +1,30 @@
 # Vision-KAN
 We are experimenting with the possibility of [KAN](https://github.com/KindXiaoming/pykan) replacing MLP in Vision Transformer, this project may be delayed for a long time due to GPU resource constraints, if there are any new developments, we will show them here!
+
+# To install this package
+
+```
+pip install Vision-KAN
+```
+
+# Minimal Example
+```
+from Vision_KAN import create_model
+
+KAN_model = create_model(
+    model_name='deit_tiny_patch16_224_KAN',
+    pretrained=False,
+    hdim_kan=192,
+    num_classes=100,
+    drop_rate=0.0,
+    drop_path_rate=0.05,
+    img_size=224,
+    batch_size=144
+)
+```
+
+
+
 | Dataset | MLP hidden dim | model | date | epoch | top1 | top5 | Checkpoint |
 |-------|-------|-------|-------|-------|-------|-------|-------|
 | ImageNet 1k | 768 | DeiT-tiny(baseline) | - | 300 | 72.2 | 91.1 | |
