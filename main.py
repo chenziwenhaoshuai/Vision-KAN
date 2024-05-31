@@ -42,6 +42,7 @@ def get_args_parser():
     parser.add_argument('--model', default='deit_tiny_patch16_224', type=str, metavar='MODEL',
                         help='Name of model to train')
     parser.add_argument('--input-size', default=224, type=int, help='images input size')
+    parser.add_argument('--hdim_kan', default=192, type=int, help='hidden dimension for KAN')
 
     parser.add_argument('--drop', type=float, default=0.0, metavar='PCT',
                         help='Dropout rate (default: 0.)')
@@ -153,11 +154,11 @@ def get_args_parser():
     parser.add_argument('--cosub', action='store_true') 
     
     # * Finetuning params
-    parser.add_argument('--finetune', default='output/checkpoint.pth', help='finetune from checkpoint')
+    parser.add_argument('--finetune', default='https://dl.fbaipublicfiles.com/deit/deit_tiny_patch16_224-a1311bcf.pth', help='finetune from checkpoint')
     parser.add_argument('--attn-only', action='store_true') 
     
     # Dataset parameters
-    parser.add_argument('--data-path', default=r'D:\czw\imagenet', type=str,
+    parser.add_argument('--data-path', default='/scratch/sg7729/KAN/Vision-KAN/Datasets', type=str,
                         help='dataset path')
     parser.add_argument('--data-set', default='IMNET', choices=['CIFAR', 'IMNET', 'INAT', 'INAT19','TinyIMNET'],
                         type=str, help='Image Net dataset path')
@@ -185,14 +186,14 @@ def get_args_parser():
 
     # distributed training parameters
     parser.add_argument('--distributed', action='store_true', default=False, help='Enabling distributed training')
-    parser.add_argument('--world_size', default=1, type=int,
-                        help='number of distributed processes')
-    parser.add_argument('--dist_url', default='env://', help='url used to set up distributed training')
+    # parser.add_argument('--world_size', default=1, type=int,
+    #                     help='number of distributed processes')
+    # parser.add_argument('--dist_url', default='env://', help='url used to set up distributed training')
     return parser
 
 
 def main(args):
-    utils.init_distributed_mode(args)
+    # utils.init_distributed_mode(args)
 
     print(args)
 
@@ -212,29 +213,29 @@ def main(args):
     dataset_train, args.nb_classes = build_dataset(is_train=True, args=args)
     dataset_val, _ = build_dataset(is_train=False, args=args)
 
-    if args.distributed:
-        num_tasks = utils.get_world_size()
-        global_rank = utils.get_rank()
-        if args.repeated_aug:
-            sampler_train = RASampler(
-                dataset_train, num_replicas=num_tasks, rank=global_rank, shuffle=True
-            )
-        else:
-            sampler_train = torch.utils.data.DistributedSampler(
-                dataset_train, num_replicas=num_tasks, rank=global_rank, shuffle=True
-            )
-        if args.dist_eval:
-            if len(dataset_val) % num_tasks != 0:
-                print('Warning: Enabling distributed evaluation with an eval dataset not divisible by process number. '
-                      'This will slightly alter validation results as extra duplicate entries are added to achieve '
-                      'equal num of samples per-process.')
-            sampler_val = torch.utils.data.DistributedSampler(
-                dataset_val, num_replicas=num_tasks, rank=global_rank, shuffle=False)
-        else:
-            sampler_val = torch.utils.data.SequentialSampler(dataset_val)
-    else:
-        sampler_train = torch.utils.data.RandomSampler(dataset_train)
-        sampler_val = torch.utils.data.SequentialSampler(dataset_val)
+    # if args.distributed:
+    #     num_tasks = utils.get_world_size()
+    #     global_rank = utils.get_rank()
+    #     if args.repeated_aug:
+    #         sampler_train = RASampler(
+    #             dataset_train, num_replicas=num_tasks, rank=global_rank, shuffle=True
+    #         )
+    #     else:
+    #         sampler_train = torch.utils.data.DistributedSampler(
+    #             dataset_train, num_replicas=num_tasks, rank=global_rank, shuffle=True
+    #         )
+    #     if args.dist_eval:
+    #         if len(dataset_val) % num_tasks != 0:
+    #             print('Warning: Enabling distributed evaluation with an eval dataset not divisible by process number. '
+    #                   'This will slightly alter validation results as extra duplicate entries are added to achieve '
+    #                   'equal num of samples per-process.')
+    #         sampler_val = torch.utils.data.DistributedSampler(
+    #             dataset_val, num_replicas=num_tasks, rank=global_rank, shuffle=False)
+    #     else:
+    #         sampler_val = torch.utils.data.SequentialSampler(dataset_val)
+    # else:
+    sampler_train = torch.utils.data.RandomSampler(dataset_train)
+    sampler_val = torch.utils.data.SequentialSampler(dataset_val)
 
     data_loader_train = torch.utils.data.DataLoader(
         dataset_train, sampler=sampler_train,

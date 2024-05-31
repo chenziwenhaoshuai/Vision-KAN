@@ -64,7 +64,7 @@ def build_dataset(is_train, args):
         dataset = datasets.ImageFolder(root, transform=transform)
         nb_classes = 1000
     elif args.data_set == 'TinyIMNET':
-        root = os.path.join(args.data_path, 'train1' if is_train else 'val1')
+        root = os.path.join(args.data_path, 'tiny-imagenet-200/train' if is_train else 'tiny-imagenet-200/val')
         dataset = datasets.ImageFolder(root, transform=transform)
         nb_classes = 100
     elif args.data_set == 'INAT':

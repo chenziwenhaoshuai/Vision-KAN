@@ -4,32 +4,39 @@ import torch
 import torch.nn as nn
 from functools import partial
 
-from timm.models.vision_transformer import VisionTransformer, _cfg, Block
+from timm.models.vision_transformer import VisionTransformer, _cfg, Block, Attention
 from timm.models.registry import register_model
 from timm.models.layers import trunc_normal_
 from fasterkan import FasterKAN as KAN
 
-__all__ = [
-    'deit_tiny_patch16_224', 'deit_small_patch16_224', 'deit_base_patch16_224',
-    'deit_tiny_distilled_patch16_224', 'deit_small_distilled_patch16_224',
-    'deit_base_distilled_patch16_224', 'deit_base_patch16_384',
-    'deit_base_distilled_patch16_384'
-]
+__all__KAN = [
+    'deit_base_patch16_224_KAN', 'deit_small_patch16_224_KAN',  
+    'deit_base_patch16_384_KAN', 'deit_tiny_patch16_224_KAN', 
+    'deit_tiny_distilled_patch16_224_KAN', 'deit_base_distilled_patch16_224_KAN', 
+    'deit_small_distilled_patch16_224_KAN', 'deit_base_distilled_patch16_384_KAN']
+
+
+__all__ViT = [
+    'deit_base_patch16_224_ViT', 'deit_small_patch16_224_ViT',  
+    'deit_base_patch16_384_ViT', 'deit_tiny_patch16_224_ViT', 
+    'deit_tiny_distilled_patch16_224_ViT', 'deit_base_distilled_patch16_224_ViT', 
+    'deit_small_distilled_patch16_224_ViT', 'deit_base_distilled_patch16_384_ViT']
+
 
 class kanBlock(Block):
 
-    def __init__(self, dim, num_heads=8, mlp_ratio=4., qkv_bias=False, qk_scale=None, drop=0., attn_drop=0.,
+    def __init__(self, dim, num_heads=8, hdim_kan=192, mlp_ratio=4., qkv_bias=False, qk_scale=None, drop=0., attn_drop=0.,
                  drop_path=0., act_layer=nn.GELU, norm_layer=nn.LayerNorm):
         super().__init__(dim, num_heads)
-        # self.norm1 = norm_layer(dim)
-        # self.attn = Attention(
-        #     dim, num_heads=num_heads, qkv_bias=qkv_bias, qk_scale=qk_scale, attn_drop=attn_drop, proj_drop=drop)
+        self.norm1 = norm_layer(dim)
+        self.attn = Attention(
+            dim, num_heads=num_heads, qkv_bias=qkv_bias, attn_drop=attn_drop, proj_drop=drop)
         # NOTE: drop path for stochastic depth, we shall see if this is better than dropout here
-        # self.drop_path = DropPath(drop_path) if drop_path > 0. else nn.Identity()
-        # self.norm2 = norm_layer(dim)
-        # mlp_hidden_dim = int(dim * mlp_ratio)
+        self.drop_path = DropPath(drop_path) if drop_path > 0. else nn.Identity()
+        self.norm2 = norm_layer(dim)
+        mlp_hidden_dim = int(dim * mlp_ratio)
         # self.mlp = Mlp(in_features=dim, hidden_features=mlp_hidden_dim, act_layer=act_layer, drop=drop)
-        self.kan = KAN([dim, 192, dim])
+        self.kan = KAN([dim, hdim_kan, dim])
 
     def forward(self, x):
         b, t, d = x.shape
@@ -40,6 +47,12 @@ class kanBlock(Block):
 
 class VisionKAN(VisionTransformer):
     def __init__(self, *args, num_heads=8, batch_size=16, **kwargs):
+        if 'hdim_kan' in kwargs:
+            self.hdim_kan = kwargs['hdim_kan']
+            del kwargs['hdim_kan']
+        else:
+            self.hdim_kan = 192
+        
         super().__init__(*args, **kwargs)
         self.num_heads = num_heads
         # For newer version timm they don't save the depth to self.depth, so we need to check it
@@ -52,7 +65,7 @@ class VisionKAN(VisionTransformer):
                 self.depth = 12
 
         block_list = [
-            kanBlock(dim=self.embed_dim, num_heads=self.num_heads)
+            kanBlock(dim=self.embed_dim, num_heads=self.num_heads, hdim_kan=self.hdim_kan)
             for i in range(self.depth)
         ]
         # check the origin type of the block is torch.nn.modules.container.Sequential
@@ -105,141 +118,193 @@ class DistilledVisionTransformer(VisionTransformer):
             # during inference, return the average of both classifier predictions
             return (x + x_dist) / 2
 
-@register_model
-def deit_tiny_patch16_224(pretrained=False, **kwargs):
-    model = VisionKAN(
+def create_kan(model_name, pretrained, **kwargs):
+
+    if model_name == 'deit_tiny_patch16_224_KAN':
+        model = VisionKAN(
         patch_size=16, embed_dim=192, depth=12, num_heads=3, mlp_ratio=4, qkv_bias=True,
         norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs)
-    model.default_cfg = _cfg()
-    if pretrained:
-        checkpoint = torch.hub.load_state_dict_from_url(
-            url="https://dl.fbaipublicfiles.com/deit/deit_tiny_patch16_224-a1311bcf.pth",
-            map_location="cpu", check_hash=True
-        )
-        model.load_state_dict(checkpoint["model"])
-    return model
-
-
-@register_model
-def deit_small_patch16_224(pretrained=False, **kwargs):
-    model = VisionTransformer(
+        model.default_cfg = _cfg()
+        if pretrained:
+            checkpoint = torch.hub.load_state_dict_from_url(
+                url="https://dl.fbaipublicfiles.com/deit/deit_tiny_patch16_224-a1311bcf.pth",
+                map_location="cpu", check_hash=True
+            )
+            model.load_state_dict(checkpoint["model"])
+        return model
+    
+    elif model_name == 'deit_small_patch16_224_KAN':
+        model = VisionKAN(
         patch_size=16, embed_dim=384, depth=12, num_heads=6, mlp_ratio=4, qkv_bias=True,
         norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs)
-    model.default_cfg = _cfg()
-    if pretrained:
-        checkpoint = torch.hub.load_state_dict_from_url(
-            url="https://dl.fbaipublicfiles.com/deit/deit_small_patch16_224-cd65a155.pth",
-            map_location="cpu", check_hash=True
-        )
-        model.load_state_dict(checkpoint["model"])
-    return model
+        model.default_cfg = _cfg()
+        if pretrained:
+            checkpoint = torch.hub.load_state_dict_from_url(
+                url="https://dl.fbaipublicfiles.com/deit/deit_small_patch16_224-cd65a155.pth",
+                map_location="cpu", check_hash=True
+            )
+            model.load_state_dict(checkpoint["model"])
+        return model
 
-
-@register_model
-def deit_base_patch16_224(pretrained=False, **kwargs):
-    model = VisionTransformer(
+    elif model_name == 'deit_base_patch16_224_KAN':
+        model = VisionKAN(
         patch_size=16, embed_dim=768, depth=12, num_heads=12, mlp_ratio=4, qkv_bias=True,
         norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs)
-    model.default_cfg = _cfg()
-    if pretrained:
-        checkpoint = torch.hub.load_state_dict_from_url(
-            url="https://dl.fbaipublicfiles.com/deit/deit_base_patch16_224-b5f2ef4d.pth",
-            map_location="cpu", check_hash=True
-        )
-        model.load_state_dict(checkpoint["model"])
-    return model
+        model.default_cfg = _cfg()
+        if pretrained:
+            checkpoint = torch.hub.load_state_dict_from_url(
+                url="https://dl.fbaipublicfiles.com/deit/deit_base_patch16_224-b5f2ef4d.pth",
+                map_location="cpu", check_hash=True
+            )
+            model.load_state_dict(checkpoint["model"])
+        return model
 
+    elif model_name == 'deit_base_patch16_384_KAN':
+        model = VisionKAN(
+        img_size=384, patch_size=16, embed_dim=768, depth=12, num_heads=12, mlp_ratio=4, qkv_bias=True,
+        norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs)
+        model.default_cfg = _cfg()
+        if pretrained:
+            checkpoint = torch.hub.load_state_dict_from_url(
+                url="https://dl.fbaipublicfiles.com/deit/deit_base_patch16_384-8de9b5d1.pth",
+                map_location="cpu", check_hash=True
+            )
+            model.load_state_dict(checkpoint["model"])
+        return model
 
-@register_model
-def deit_tiny_distilled_patch16_224(pretrained=False, **kwargs):
-    model = DistilledVisionTransformer(
+    elif model_name == 'deit_tiny_distilled_patch16_224_KAN':
+        raise RuntimeError('Distilled models are not yet implmented in KAN')
+
+    elif model_name == 'deit_small_distilled_patch16_224_KAN':
+        raise RuntimeError('Distilled models are not yet implmented in KAN')
+
+    elif model_name == 'deit_base_distilled_patch16_224_KAN':
+        raise RuntimeError('Distilled models are not yet implmented in KAN')
+
+def create_ViT(model_name, pretrained, **kwargs):
+    if 'batch_size' in kwargs:
+        del kwargs['batch_size']
+    if model_name == 'deit_base_patch16_224_ViT':
+        model = VisionTransformer(
         patch_size=16, embed_dim=192, depth=12, num_heads=3, mlp_ratio=4, qkv_bias=True,
         norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs)
-    model.default_cfg = _cfg()
-    if pretrained:
-        checkpoint = torch.hub.load_state_dict_from_url(
-            url="https://dl.fbaipublicfiles.com/deit/deit_tiny_distilled_patch16_224-b40b3cf7.pth",
-            map_location="cpu", check_hash=True
-        )
-        model.load_state_dict(checkpoint["model"])
-    return model
-
-
-@register_model
-def deit_small_distilled_patch16_224(pretrained=False, **kwargs):
-    model = DistilledVisionTransformer(
+        model.default_cfg = _cfg()
+        if pretrained:
+            checkpoint = torch.hub.load_state_dict_from_url(
+                url="https://dl.fbaipublicfiles.com/deit/deit_tiny_patch16_224-a1311bcf.pth",
+                map_location="cpu", check_hash=True
+            )
+            model.load_state_dict(checkpoint["model"])
+        return model
+    
+    elif model_name == 'deit_small_patch16_224_ViT':
+        model = VisionTransformer(
         patch_size=16, embed_dim=384, depth=12, num_heads=6, mlp_ratio=4, qkv_bias=True,
         norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs)
-    model.default_cfg = _cfg()
-    if pretrained:
-        checkpoint = torch.hub.load_state_dict_from_url(
-            url="https://dl.fbaipublicfiles.com/deit/deit_small_distilled_patch16_224-649709d9.pth",
-            map_location="cpu", check_hash=True
-        )
-        model.load_state_dict(checkpoint["model"])
-    return model
+        model.default_cfg = _cfg()
+        if pretrained:
+            checkpoint = torch.hub.load_state_dict_from_url(
+                url="https://dl.fbaipublicfiles.com/deit/deit_small_patch16_224-cd65a155.pth",
+                map_location="cpu", check_hash=True
+            )
+            model.load_state_dict(checkpoint["model"])
+        return model
 
-
-@register_model
-def deit_base_distilled_patch16_224(pretrained=False, **kwargs):
-    model = DistilledVisionTransformer(
+    elif model_name == 'deit_base_patch16_224_ViT':
+        model = VisionTransformer(
         patch_size=16, embed_dim=768, depth=12, num_heads=12, mlp_ratio=4, qkv_bias=True,
         norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs)
-    model.default_cfg = _cfg()
-    if pretrained:
-        checkpoint = torch.hub.load_state_dict_from_url(
-            url="https://dl.fbaipublicfiles.com/deit/deit_base_distilled_patch16_224-df68dfff.pth",
-            map_location="cpu", check_hash=True
-        )
-        model.load_state_dict(checkpoint["model"])
-    return model
+        model.default_cfg = _cfg()
+        if pretrained:
+            checkpoint = torch.hub.load_state_dict_from_url(
+                url="https://dl.fbaipublicfiles.com/deit/deit_base_patch16_224-b5f2ef4d.pth",
+                map_location="cpu", check_hash=True
+            )
+            model.load_state_dict(checkpoint["model"])
+        return model
 
-
-@register_model
-def deit_base_patch16_384(pretrained=False, **kwargs):
-    model = VisionTransformer(
+    elif model_name == 'deit_base_patch16_384_ViT':
+        model = VisionTransformer(
         img_size=384, patch_size=16, embed_dim=768, depth=12, num_heads=12, mlp_ratio=4, qkv_bias=True,
         norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs)
-    model.default_cfg = _cfg()
-    if pretrained:
-        checkpoint = torch.hub.load_state_dict_from_url(
-            url="https://dl.fbaipublicfiles.com/deit/deit_base_patch16_384-8de9b5d1.pth",
-            map_location="cpu", check_hash=True
-        )
-        model.load_state_dict(checkpoint["model"])
-    return model
+        model.default_cfg = _cfg()
+        if pretrained:
+            checkpoint = torch.hub.load_state_dict_from_url(
+                url="https://dl.fbaipublicfiles.com/deit/deit_base_patch16_384-8de9b5d1.pth",
+                map_location="cpu", check_hash=True
+            )
+            model.load_state_dict(checkpoint["model"])
+        return model
 
+    elif model_name == 'deit_tiny_distilled_patch16_224_ViT':
+        model = DistilledVisionTransformer(
+        patch_size=16, embed_dim=192, depth=12, num_heads=3, mlp_ratio=4, qkv_bias=True,
+        norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs)
+        model.default_cfg = _cfg()
+        if pretrained:
+            checkpoint = torch.hub.load_state_dict_from_url(
+                url="https://dl.fbaipublicfiles.com/deit/deit_tiny_distilled_patch16_224-b40b3cf7.pth",
+                map_location="cpu", check_hash=True
+            )
+            model.load_state_dict(checkpoint["model"])
+        return model
+    
+    elif model_name == 'deit_small_distilled_patch16_224_ViT':
+        model = DistilledVisionTransformer(
+        patch_size=16, embed_dim=384, depth=12, num_heads=6, mlp_ratio=4, qkv_bias=True,
+        norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs)
+        model.default_cfg = _cfg()
+        if pretrained:
+            checkpoint = torch.hub.load_state_dict_from_url(
+                url="https://dl.fbaipublicfiles.com/deit/deit_small_distilled_patch16_224-649709d9.pth",
+                map_location="cpu", check_hash=True
+            )
+            model.load_state_dict(checkpoint["model"])
+        return model
 
-@register_model
-def deit_base_distilled_patch16_384(pretrained=False, **kwargs):
-    model = DistilledVisionTransformer(
+    elif model_name == 'deit_base_distilled_patch16_224_ViT':
+        model = DistilledVisionTransformer(
+        patch_size=16, embed_dim=768, depth=12, num_heads=12, mlp_ratio=4, qkv_bias=True,
+        norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs)
+        model.default_cfg = _cfg()
+        if pretrained:
+            checkpoint = torch.hub.load_state_dict_from_url(
+                url="https://dl.fbaipublicfiles.com/deit/deit_base_distilled_patch16_224-df68dfff.pth",
+                map_location="cpu", check_hash=True
+            )
+            model.load_state_dict(checkpoint["model"])
+        return model
+
+    elif model_name == 'deit_base_distilled_patch16_384_ViT':
+        model = DistilledVisionTransformer(
         img_size=384, patch_size=16, embed_dim=768, depth=12, num_heads=12, mlp_ratio=4, qkv_bias=True,
         norm_layer=partial(nn.LayerNorm, eps=1e-6), **kwargs)
-    model.default_cfg = _cfg()
-    if pretrained:
-        checkpoint = torch.hub.load_state_dict_from_url(
-            url="https://dl.fbaipublicfiles.com/deit/deit_base_distilled_patch16_384-d0272ac0.pth",
-            map_location="cpu", check_hash=True
-        )
-        model.load_state_dict(checkpoint["model"])
-    return model
-# create_model(
-#         args.model,
-#         pretrained=False,
-#         num_classes=args.nb_classes,
-#         drop_rate=args.drop,
-#         drop_path_rate=args.drop_path,
-#         drop_block_rate=None,
-#         img_size=args.input_size
-#     )
+        model.default_cfg = _cfg()
+        if pretrained:
+            checkpoint = torch.hub.load_state_dict_from_url(
+                url="https://dl.fbaipublicfiles.com/deit/deit_base_distilled_patch16_384-d0272ac0.pth",
+                map_location="cpu", check_hash=True
+            )
+            model.load_state_dict(checkpoint["model"])
+        return model
+
+
 def create_model(model_name,**kwargs):
-    if model_name in __all__:
-        create_fn = globals()[model_name]
-        model = create_fn(**kwargs)
+    pretrained = kwargs['pretrained'] if 'pretrained' in kwargs else False
+    if 'pretrained' in kwargs:
+        del kwargs['pretrained']
+    print(kwargs)
+    if model_name in __all__KAN:
+        model = create_kan(model_name, pretrained, **kwargs)
+        model.default_cfg = _cfg()
+        return model
+    elif model_name in __all__ViT:
+        model = create_ViT(model_name, pretrained, **kwargs)
         model.default_cfg = _cfg()
         return model
     else:
         raise RuntimeError('Unknown model (%s)' % model_name)
+
 if __name__ == '__main__':
     model = deit_tiny_patch16_224().cuda()
     img = torch.randn(5, 3, 224, 224).cuda()

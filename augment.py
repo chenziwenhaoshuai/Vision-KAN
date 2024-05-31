@@ -9,7 +9,7 @@ and timm DA(https://github.com/rwightman/pytorch-image-models)
 import torch
 from torchvision import transforms
 
-from timm.data.transforms import _pil_interp, RandomResizedCropAndInterpolation, ToNumpy, ToTensor
+from timm.data.transforms import str_to_pil_interp, RandomResizedCropAndInterpolation, ToNumpy, ToTensor
 
 import numpy as np
 from torchvision import datasets, transforms
