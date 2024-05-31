@@ -62,3 +62,14 @@ We used [DeiT](https://github.com/facebookresearch/deit) as a baseline for Visio
 # Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=chenziwenhaoshuai/Vision-KAN&type=Date)](https://star-history.com/#chenziwenhaoshuai/Vision-KAN&Date)
+
+# If you are using our work, please cite
+
+```
+@misc{VisionKAN2024,
+  author = {Ziwen Chen and Gundavarapu and WU DI},
+  title = {Vision-KAN: Exploring the Possibility of KAN Replacing MLP in Vision Transformer},
+  year = {2024},
+  howpublished = {\url{https://github.com/chenziwenhaoshuai/Vision-KAN.git}},
+}
+```
