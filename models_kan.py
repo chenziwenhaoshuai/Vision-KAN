@@ -47,12 +47,14 @@ class kanBlock(Block):
 
 class VisionKAN(VisionTransformer):
     def __init__(self, *args, num_heads=8, batch_size=16, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.num_heads = num_heads
         if 'hdim_kan' in kwargs:
             self.hdim_kan = kwargs['hdim_kan']
+            del kwargs['hdim_kan']
         else:
             self.hdim_kan = 192
+        
+        super().__init__(*args, **kwargs)
+        self.num_heads = num_heads
         # For newer version timm they don't save the depth to self.depth, so we need to check it
         try:
             self.depth
@@ -116,7 +118,7 @@ class DistilledVisionTransformer(VisionTransformer):
             # during inference, return the average of both classifier predictions
             return (x + x_dist) / 2
 
-def create_kan(model_name, **kwargs):
+def create_kan(model_name, pretrained, **kwargs):
 
     if model_name == 'deit_tiny_patch16_224_KAN':
         model = VisionKAN(
@@ -179,7 +181,9 @@ def create_kan(model_name, **kwargs):
     elif model_name == 'deit_base_distilled_patch16_224_KAN':
         raise RuntimeError('Distilled models are not yet implmented in KAN')
 
-def create_ViT(model_name, **kwargs):
+def create_ViT(model_name, pretrained, **kwargs):
+    if 'batch_size' in kwargs:
+        del kwargs['batch_size']
     if model_name == 'deit_base_patch16_224_ViT':
         model = VisionTransformer(
         patch_size=16, embed_dim=192, depth=12, num_heads=3, mlp_ratio=4, qkv_bias=True,
@@ -287,6 +291,9 @@ def create_ViT(model_name, **kwargs):
 
 def create_model(model_name,**kwargs):
     pretrained = kwargs['pretrained'] if 'pretrained' in kwargs else False
+    if 'pretrained' in kwargs:
+        del kwargs['pretrained']
+    print(kwargs)
     if model_name in __all__KAN:
         model = create_kan(model_name, pretrained, **kwargs)
         model.default_cfg = _cfg()
